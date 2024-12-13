@@ -1,0 +1,122 @@
+.confirmModal.confirmModal.confirmModal{
+  .header{
+    width: 100%;
+    height: 54px;
+    padding: 0 18px 0 24px;
+    border-bottom: 1px solid #F0F0F0;
+    display: flex;
+    align-items: center;
+
+    .title{
+      font-size: 16px;
+      line-height: 22px;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 85%);
+    }
+
+    .closeButton{
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-left: auto;
+      color: rgba(34, 39, 37, 45%);
+      transition: color 0.2s,background-color 0.2s;
+
+      &:hover{
+        background-color: rgba(34, 39, 37, 6%);
+        color: rgba(34, 39, 37, 88%);
+      }
+
+      .closeIcon{
+        font-size: 10px;
+      }
+    }
+  }
+
+  .body{
+    padding: 24px;
+    display: flex;
+
+    .bodyIcon{
+      flex: none;
+      margin-right: 16px;
+    }
+
+    .content{
+      .title{
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: bold;
+        color: rgba(0, 0, 0, 85%);
+      }
+
+      .description{
+        font-size: 14px;
+        line-height: 20px;
+        color: rgba(0, 0, 0, 85%);
+      }
+    }
+  }
+
+  :global{
+    .ant-modal-content{
+      padding: 0;
+
+      .ant-modal-confirm-paragraph{
+        max-width: 100%;
+
+        .ant-modal-confirm-content{
+          width: 100%;
+        }
+      }
+
+      .ant-modal-confirm-btns{
+        margin: 0;
+        padding: 10px 16px;
+        border-top: 1px solid #F0F0F0;
+      }
+    }
+  }
+}
+
+.confirmModalSimple.confirmModalSimple.confirmModalSimple{
+  :global{
+    .ant-modal-content{
+      padding: 32px 32px 24px;
+
+      .ant-modal-confirm-body{
+        &>.anticon{
+          margin-right: 16px;
+        }
+
+        &>.anticon +.ant-modal-confirm-title+.ant-modal-confirm-content{
+          margin-left: 38px;
+        }
+
+        .ant-modal-confirm-title{
+          font-size: 14px;
+          line-height: 20px;
+          font-weight: bold;
+          color: rgba(0, 0, 0, 85%);
+        }
+
+        .ant-modal-confirm-content{
+          color: rgba(0, 0, 0, 85%);
+        }
+      }
+
+      .ant-modal-confirm-btns{
+        margin-top: 24px;
+      }
+    }
+  }
+}
+
+.bodyDefaultIcon{
+  font-size: 22px;
+  color: #FFC53D;
+}
