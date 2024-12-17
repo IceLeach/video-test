@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { history } from 'umi';
 import mpegts from 'mpegts.js';
 import { Button, Input, Radio, Tabs } from 'antd';
+import classNames from 'classnames';
 import styles from './index.less';
 
 const Flv: React.FC = () => {
@@ -36,7 +37,7 @@ const Flv: React.FC = () => {
     playerRef.current = player;
     player.attachMediaElement(ref.current!);
     player.load();
-    player.play();
+    ref.current?.play();
   }
 
   return (
@@ -52,11 +53,11 @@ const Flv: React.FC = () => {
       />
       {supported ? (
         <>
-          <video ref={ref} className={styles.video} controls={!isLive} autoPlay playsInline>
+          <video ref={ref} className={classNames([styles.video, isLive ? styles.videoLive : null])} controls controlsList='noplaybackrate' disablePictureInPicture autoPlay playsInline>
             不支持HTML5 video
           </video>
           <Input
-            placeholder='直播地址'
+            placeholder='播放地址'
             className={styles.input}
             value={url}
             onChange={e => setUrl(e.target.value)}

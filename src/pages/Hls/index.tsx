@@ -1,48 +1,40 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { history } from 'umi';
-import { Button, Input, Tabs } from 'antd';
-import videojs from 'video.js';
-import Player from 'video.js/dist/types/player';
-import HlsVideo from '@/components/HlsVideo';
+import Hls from 'hls.js';
+import { Button, Input, Radio, Tabs } from 'antd';
+import classNames from 'classnames';
 import styles from './index.less';
 
-const Hls: React.FC = () => {
+const HlsVideo: React.FC = () => {
+  const [supported, setSupported] = useState<boolean>(false);
   const [url, setUrl] = useState<string>('');
-  const [playUrl, setPlayUrl] = useState<string>();
-  const playerRef = useRef<Player | null>(null);
+  const [isLive, setIsLive] = useState<boolean>(true);
+  const ref = useRef<HTMLVideoElement>(null);
+  const playerRef = useRef<Hls>();
 
-  const handlePlayerReady = (player: Player) => {
+  const destroyPlayer = () => {
+    playerRef.current?.destroy();
+  }
+
+  useEffect(() => {
+    setSupported(Hls.isSupported());
+
+    return () => {
+      destroyPlayer();
+    }
+  }, []);
+
+  const initPlayer = (url: string, isLive: boolean) => {
+    console.log('initPlayer', url, isLive);
+    destroyPlayer();
+    // http://kbs-dokdo.gscdn.com/dokdo_300/definst/dokdo_300.stream/playlist.m3u8
+    // https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8
+    const player = new Hls();
     playerRef.current = player;
-
-    // You can handle player events here, for example:
-    player.on('waiting', () => {
-      videojs.log('player is waiting');
-    });
-
-    player.on('dispose', () => {
-      videojs.log('player will dispose');
-    });
-  };
-
-  const video = useMemo(() => {
-    const videoJsOptions = {
-      controlBar: {
-        timeDivider: true,
-        durationDisplay: true,
-        remainingTimeDisplay: true,
-        fullscreenToggle: true, // 全屏按钮
-        pictureInPictureToggle: false,
-      },
-      // http://kbs-dokdo.gscdn.com/dokdo_300/definst/dokdo_300.stream/playlist.m3u8
-      // https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/hls/xgplayer-demo.m3u8
-    };
-    return (
-      <HlsVideo
-        options={{ ...videoJsOptions, sources: playUrl ? [{ src: playUrl, type: 'video/x-mpegURL' }] : undefined }}
-        onReady={handlePlayerReady}
-      />
-    )
-  }, [playUrl]);
+    player.attachMedia(ref.current!);
+    player.loadSource(url);
+    ref.current?.play();
+  }
 
   return (
     <div className={styles.container}>
@@ -55,25 +47,38 @@ const Hls: React.FC = () => {
         ]}
         onChange={key => history.push(`/${key}`)}
       />
-      <div className={styles.video}>
-        {video}
-      </div>
-      <Input
-        placeholder='直播/回放地址'
-        className={styles.input}
-        value={url}
-        onChange={e => setUrl(e.target.value)}
-      />
-      <Button
-        type='primary'
-        disabled={!url}
-        className={styles.button}
-        onClick={() => setPlayUrl(url)}
-      >
-        播放
-      </Button>
+      {supported ? (
+        <>
+          <video ref={ref} className={classNames([styles.video, isLive ? styles.videoLive : null])} controls controlsList='noplaybackrate' disablePictureInPicture autoPlay playsInline>
+            不支持HTML5 video
+          </video>
+          <Input
+            placeholder='播放地址'
+            className={styles.input}
+            value={url}
+            onChange={e => setUrl(e.target.value)}
+          />
+          <Button
+            type='primary'
+            disabled={!url}
+            className={styles.button}
+            onClick={() => initPlayer(url, isLive)}
+          >
+            播放
+          </Button>
+          <Radio.Group
+            value={isLive}
+            onChange={e => setIsLive(e.target.value)}
+            className={styles.radio}
+            options={[
+              { label: '直播', value: true },
+              { label: '录像', value: false },
+            ]}
+          />
+        </>
+      ) : '不支持hls.js'}
     </div>
   );
 }
 
-export default Hls;
+export default HlsVideo;
